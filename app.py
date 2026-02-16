@@ -120,8 +120,9 @@ def get_gemini_response_smart(file_content, mime_type):
 def generate_barcode_image(code_text):
     try:
         codes = encode(code_text, columns=5)
-        image = render_image(codes, scale=3, ratio=5)
-        base_border = 20
+        # Scale ve ratio artırıldı
+        image = render_image(codes, scale=6, ratio=4)
+        base_border = 40  # Border da orantılı arttı
         img_padded = ImageOps.expand(image, border=base_border, fill="white")
         w, h = img_padded.size
         final_square_size = max(w, h)
@@ -227,7 +228,7 @@ def main():
                     st.markdown(f"**🏷️ {code}**")
                     img_buffer = generate_barcode_image(code)
                     if img_buffer:
-                        st.image(img_buffer, width=350)
+                        st.image(img_buffer, width=500)
                     st.divider()
 
 if __name__ == "__main__":
