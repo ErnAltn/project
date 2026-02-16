@@ -1,0 +1,6 @@
+streamlit
+pdfplumber
+pdf417gen
+Pillow
+pytesseract
+google-genai
