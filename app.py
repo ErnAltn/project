@@ -8,8 +8,7 @@ import zipfile
 import json
 import re
 
-# --- AYARLAR ---
-GOOGLE_API_KEY = "AIzaSyA2pcNFzC48cw-8xgY0QK44lzQ0u5C3qQE"
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 # Sayfa Ayarları
 st.set_page_config(
@@ -119,11 +118,18 @@ def get_gemini_response_smart(file_content, mime_type):
 
 def generate_barcode_image(code_text):
     try:
-        codes = encode(code_text, columns=5)
-        # Scale ve ratio artırıldı
-        image = render_image(codes, scale=6, ratio=4)
-        base_border = 40  # Border da orantılı arttı
+        # DEĞİŞİKLİK 1: columns=5 yerine 8-10 arası yapın (Barkodu genişletir)
+        # DEĞİŞİKLİK 2: security_level=5 ekleyin (Okuma hatasını tolere eder)
+        codes = encode(code_text, columns=8, security_level=5)
+        
+        # DEĞİŞİKLİK 3: scale'i 6'dan 8'e çıkarın (Daha büyük pikseller)
+        # ratio=3 (Satır yüksekliği standarda daha yakın olsun, 4 bazen fazla uzun kalabilir)
+        image = render_image(codes, scale=8, ratio=3)
+        
+        base_border = 50  # Kenar boşluğunu biraz daha rahatlatın
         img_padded = ImageOps.expand(image, border=base_border, fill="white")
+        
+        # ... geri kalan kod aynı ...
         w, h = img_padded.size
         final_square_size = max(w, h)
         white_box = Image.new("RGB", (final_square_size, final_square_size), "white")
@@ -228,7 +234,7 @@ def main():
                     st.markdown(f"**🏷️ {code}**")
                     img_buffer = generate_barcode_image(code)
                     if img_buffer:
-                        st.image(img_buffer, width=500)
+                        st.image(img_buffer, width=350)
                     st.divider()
 
 if __name__ == "__main__":
